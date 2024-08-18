@@ -34,3 +34,47 @@ Este proyecto sigue un flujo de trabajo estructurado en cinco módulos clave, ca
 3. `AFND.py` → `subconjuntos.py` = **Determinización del AFD**
 4. `subconjuntos.py` → `minAFD.py` = **Minimización del AFD**
 5. `minAFD.py` → `automata.py` = **el main puede jugar con el AFD y el `automata.py`**
+
+
+## Cuales seran nuestras notaciones
+Las Notaciones son importantes, y para que todos en el proyecto llevemos las mismas sintonias, se usaran las siguientes (estan con ejemplos, para una mejor comprension):
+```javascript
+AFND:
+//Para el AFND, se usara E para la representacion de epsilon
+{
+  "Q": ["q0", "q1", "q2", "q3"], // Los estados que contiene el automata
+  "s": ["a", "b", "E"], // Transiciones, incluyendo épsilon
+  "q0": "q0", // Estado inicial
+  "F": ["q2"], // Estado/s de aceptacion
+  "p": [
+    // Predicados (movimientos, "q" es el estado inicial, "a" es con qué transición se está moviendo, "q'" es a dónde se mueve después)
+    {"q": "q0", "a": "a", "q'": ["q0", "q1"]},
+    {"q": "q0", "a": "b", "q'": ["q0"]},
+    {"q": "q0", "a": "E", "q'": ["q3"]},
+    {"q": "q1", "a": "a", "q'": ["q2"]},
+    {"q": "q1", "a": "b", "q'": ["q1", "q2"]},
+    {"q": "q2", "a": "a", "q'": ["q2"]},
+    {"q": "q2", "a": "b", "q'": ["q0", "q2"]},
+    {"q": "q3", "a": "E", "q'": ["q2"]}
+  ]
+}
+
+
+
+AFD:
+{
+    "Q": ["q0", "q1", "q2"], //Los estados que contiene el automata
+    "s": ["a", "b"], //Transiciones
+    "q0": "q0", //Estado inicial
+    "F": ["q2"], //Estado/s de aceptacion
+    "p": [
+      //Predicados (movimientos, "q" es el estado inical, "a" es con que transicion se esta moviendo, "q" es a donde se mueve despues)
+      {"q": "q0", "a": "a", "q'": "q1"},
+      {"q": "q0", "a": "b", "q'": "q0"},
+      {"q": "q1", "a": "a", "q'": "q2"},
+      {"q": "q1", "a": "b", "q'": "q0"},
+      {"q": "q2", "a": "a", "q'": "q2"},
+      {"q": "q2", "a": "b", "q'": "q2"}
+    ]
+}  
+```
