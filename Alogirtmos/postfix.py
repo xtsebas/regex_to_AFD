@@ -3,6 +3,12 @@ Este módulo contiene la implementación de la conversión de una expresión reg
 Se debe de utilizar el algoritmo Shunting Yard para realizar la conversión.
 Debe regresar un string con la expresión regular en notación postfija.
 """
+import sys
+import os
+
+# Añade el directorio base del proyecto al sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from Estructuras.Stack import Stack
 
 def regex_to_postfix(regex: str) -> str:
     return 
@@ -10,6 +16,7 @@ def regex_to_postfix(regex: str) -> str:
 def shunting_yard(regex: str) -> str:
     
     output = []
+    operadores = Stack()
     
     for token in regex:
         print(token)
