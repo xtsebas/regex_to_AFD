@@ -34,10 +34,10 @@ def shunting_yard(regex: str) -> str:
     
     # Precedencia de operadores
     precedencia = { 
-                   "+" : 4,  # Cerradura positiva (uno o mas)
-                   "*" : 3,  # Cerradura de Kleene (cero o mas)
-                   "?" : 2,  # Concatenacion (representado por ? para usar en shunting)
-                   "|" : 1   # Union (uno u otro)
+                   "+" : 4,  # Cerradura positiva (uno o más)
+                   "*" : 4,  # Cerradura de Kleene (cero o más)
+                   "?" : 3,  # Concatenación
+                   "|" : 2   # Unión (alternancia)
                    }
     
     operadores = list(precedencia.keys())
@@ -62,8 +62,10 @@ def shunting_yard(regex: str) -> str:
     while not pila_operadores.is_empty():
         output.append(pila_operadores.pop())
     
-    # Eliminar los símbolos de concatenación ('?') del output
+    # Eliminar los símbolos de concatenación ('?') del output si no es necesario
+    output = [token for token in output]
     output = [token for token in output if token != '?']
+
     return ''.join(output)
 
             
@@ -100,7 +102,6 @@ def insertar_concatenacion(regex):
     return nueva_expresion
 
 
-#infix : expected postfix
 regex_postfix_test = {
     "a(a+b)|b": "aab+b|",
     "abc": "abc",
@@ -120,7 +121,7 @@ def test(regex_hash):
         if postfix_output == regex_hash[regex]:
             
             passed += 1
-            debug = f"infix regex --> {BLUE}{regex}{RESET} postfix regex -> {MAGENTA}{regex}{RESET}"            
+            debug = f"infix regex --> {BLUE}{regex}{RESET} postfix regex -> {MAGENTA}{postfix_output}{RESET}"            
             print(f"{YELLOW}{"="*len(debug)}{RESET}")
             print(f"REGEX: {CYAN}{regex}{RESET}")
             print(f"expresion formateada: {CYAN}{insertar_concatenacion(regex)}{RESET}")

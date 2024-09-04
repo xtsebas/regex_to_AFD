@@ -14,20 +14,20 @@ class Stack:
         Elimina y devuelve el ultimo elemento en la pila
         Si la pila esta vacio devuelve None
         """
-        if len(self.items) == 0:
-            return None
+        if not self.is_empty():
+            return self.items.pop()
         else:
-            return self.items.pop(0)
+            return None
     
     def peek(self):
         """
         Devuelve el ultimo elemento en la pila sin eliminarlo
         Si la pila esta vacio devuelve None
         """
-        if len(self.items) == 0:
-            return None
+        if not self.is_empty():
+            return self.items[-1]
         else:
-            return self.items[0]
+            return None
         
     def is_empty(self):
         return len(self.items) == 0
