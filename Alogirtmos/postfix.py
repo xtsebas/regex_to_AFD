@@ -11,15 +11,41 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from Estructuras.Stack import Stack
 
 def regex_to_postfix(regex: str) -> str:
-    return 
+    return shunting_yard(insertar_concatenacion(regex))
 
 def shunting_yard(regex: str) -> str:
-    
     output = []
-    operadores = Stack()
+    pila_operadores = Stack()
+    
+    # Precedencia de operadores
+    precedencia = { "*" : 3, "+" : 2, "?" : 1 }  # La concatenación tiene la menor precedencia
+    operadores = list(precedencia.keys())
     
     for token in regex:
-        print(token)
+        if token not in operadores and token not in "()":  # Si es un operando
+            output.append(token)
+        elif token in operadores:  # Si es un operador
+            while (not pila_operadores.is_empty() and 
+                   pila_operadores.peek() in operadores and 
+                   precedencia[pila_operadores.peek()] >= precedencia[token]):
+                output.append(pila_operadores.pop())
+            pila_operadores.push(token)
+        elif token == '(':  # Si es un paréntesis izquierdo
+            pila_operadores.push(token)
+        elif token == ')':  # Si es un paréntesis derecho
+            while not pila_operadores.is_empty() and pila_operadores.peek() != '(':
+                output.append(pila_operadores.pop())
+            pila_operadores.pop()  # Eliminar el paréntesis izquierdo
+
+    # Vaciar la pila de operadores al final
+    while not pila_operadores.is_empty():
+        output.append(pila_operadores.pop())
+    
+    # Eliminar los símbolos de concatenación ('?') del output
+    output = [token for token in output if token != '?']
+    return ''.join(output)
+
+            
         
 def insertar_concatenacion(regex):
     """
@@ -54,3 +80,5 @@ def insertar_concatenacion(regex):
     return nueva_expresion
 
 
+regex = "a(a+b)*b"
+print("Expresión en notación postfija:", regex_to_postfix(regex))

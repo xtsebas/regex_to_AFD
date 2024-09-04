@@ -28,3 +28,6 @@ class Stack:
             return None
         else:
             return self.items[0]
+        
+    def is_empty(self):
+        return len(self.items) == 0
