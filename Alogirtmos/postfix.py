@@ -9,8 +9,23 @@ import os
 # Añade el directorio base del proyecto al sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from Estructuras.Stack import Stack
+RED = "\033[31m"
+GREEN = "\033[32m"
+RESET = "\033[0m"
+YELLOW = "\033[33m"
+BLUE = "\033[34m"
+CYAN = "\033[36m"
+MAGENTA = "\033[35m"
 
 def regex_to_postfix(regex: str) -> str:
+    """
+    Recibe una regex y lo
+    Operadores aceptados
+
+    "|" -> Union
+    "*" -> Estrella de 
+    
+    """
     return shunting_yard(insertar_concatenacion(regex))
 
 def shunting_yard(regex: str) -> str:
@@ -18,7 +33,13 @@ def shunting_yard(regex: str) -> str:
     pila_operadores = Stack()
     
     # Precedencia de operadores
-    precedencia = { "*" : 3, "+" : 2, "?" : 1 }  # La concatenación tiene la menor precedencia
+    precedencia = { 
+                   "+" : 4,  # Cerradura positiva (uno o mas)
+                   "*" : 3,  # Cerradura de Kleene (cero o mas)
+                   "?" : 2,  # Concatenacion (representado por ? para usar en shunting)
+                   "|" : 1   # Union (uno u otro)
+                   }
+    
     operadores = list(precedencia.keys())
     
     for token in regex:
@@ -76,9 +97,43 @@ def insertar_concatenacion(regex):
             if (char.isalnum() or char == ')' or char == '*') and \
                (next_char.isalnum() or next_char == '('):
                 nueva_expresion += '?'
-    
     return nueva_expresion
 
 
-regex = "a(a+b)*b"
-print("Expresión en notación postfija:", regex_to_postfix(regex))
+#infix : expected postfix
+regex_postfix_test = {
+    "a(a+b)|b": "aab+b|",
+    "abc": "abc",
+    "ab|c": "abc|",
+    "a(bb)+c": "abbc+",
+    "abc(a|v)": "abcav|",
+    "(b|b)*abb(a|b)*" : "bb|*abbab|*"
+    }
+
+
+def test(regex_hash):
+    passed = 0
+    for regex in regex_hash:
+        
+        postfix_output = regex_to_postfix(regex=regex)
+        
+        if postfix_output == regex_hash[regex]:
+            
+            passed += 1
+            debug = f"infix regex --> {BLUE}{regex}{RESET} postfix regex -> {MAGENTA}{regex}{RESET}"            
+            print(f"{YELLOW}{"="*len(debug)}{RESET}")
+            print(f"REGEX: {CYAN}{regex}{RESET}")
+            print(f"expresion formateada: {CYAN}{insertar_concatenacion(regex)}{RESET}")
+            print(debug)
+            print(f"{GREEN}PASSED{RESET}")
+            
+        else:
+            debug = f"infix regex --> {BLUE}{regex}{RESET} postfix regex -> {MAGENTA}{regex}{RESET}"            
+            print(f"{YELLOW}{"="*len(debug)}{RESET}")
+            print("correct postfix -> "+regex_hash[regex])
+            print(f"{RED}FAIL{RESET}")
+            print("=" * len(debug))
+    print("accuracy -----> " + str((passed/len(regex_hash))*100)+"%")
+            
+            
+test(regex_postfix_test)
