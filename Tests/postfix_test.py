@@ -1,8 +1,6 @@
-
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 from Algoritmos.postfix import regex_to_postfix, insertar_concatenacion # func test
 
 GREEN = "\033[32m"
@@ -11,9 +9,7 @@ YELLOW = "\033[33m"
 BLUE = "\033[34m"
 CYAN = "\033[36m"
 MAGENTA = "\033[35m"
-
-
-
+RED = "\033[31m"
 
 regex_postfix_test = {
     "a(a+b)|b": "aab+b|",
