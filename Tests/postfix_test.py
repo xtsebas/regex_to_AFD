@@ -12,12 +12,12 @@ MAGENTA = "\033[35m"
 RED = "\033[31m"
 
 regex_postfix_test = {
-    "a(a+b)|b": "aab+b|",
-    "abc": "abc",
-    "ab|c": "abc|",
-    "a(bb)+c": "abbc+",
-    "abc(a|v)": "abcav|",
-    "(b|b)*abb(a|b)*" : "bb|*abbab|*"
+    
+    "(b|b)*abb(a|b)*" : "bb|*abbab|*", #ejemplo proyecto
+    "b*(z*|o)*s" : "b*z*o|*s",
+    "55((88)*|3)*zzx*" : "5588*3|*zzx*",
+    "(0|(1(01*(00)*0)*1)*)" : "0101*00*0*1*|" #ejemplo clase
+    
     }
 
 

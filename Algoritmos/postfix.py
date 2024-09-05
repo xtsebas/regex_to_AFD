@@ -15,11 +15,11 @@ RED = "\033[31m"
 def regex_to_postfix(regex: str) -> str:
     """
     Recibe una regex y lo
-    Operadores aceptados
-
-    "|" -> Union
-    "*" -> Estrella de 
+    Operadores aceptados:
     
+    "*" -> Estrella de klean (cero o mas)
+    "?" -> Concatencacion
+    "|" -> Union (uno o otro)
     """
     return shunting_yard(insertar_concatenacion(regex))
 
@@ -29,7 +29,6 @@ def shunting_yard(regex: str) -> str:
     
     # Precedencia de operadores
     precedencia = { 
-                   "+" : 4,  # Cerradura positiva (uno o más)
                    "*" : 4,  # Cerradura de Kleene (cero o más)
                    "?" : 3,  # Concatenación
                    "|" : 2   # Unión (alternancia)
