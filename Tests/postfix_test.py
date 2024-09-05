@@ -11,6 +11,11 @@ CYAN = "\033[36m"
 MAGENTA = "\033[35m"
 RED = "\033[31m"
 
+"""
+regex_postfix_test hash
+key --> regex
+value --> valor esperado de conversion regex -> postfix
+"""
 regex_postfix_test = {
     
     "(b|b)*abb(a|b)*" : "bb|*abbab|*", #ejemplo proyecto
@@ -27,6 +32,7 @@ def test(regex_hash):
         
         postfix_output = regex_to_postfix(regex=regex)
         
+        #Chequeo de postfix_output vs valor esperado (test)
         if postfix_output == regex_hash[regex]:
             
             passed += 1
