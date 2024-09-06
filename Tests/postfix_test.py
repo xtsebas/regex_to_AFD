@@ -21,8 +21,8 @@ regex_postfix_test = {
     "(b|b)*abb(a|b)*" : "bb|*abbab|*", #ejemplo proyecto
     "b*(z*|o)*s" : "b*z*o|*s",
     "55((88)*|3)*zzx*" : "5588*3|*zzx*",
-    "(0|(1(01*(00)*0)*1)*)" : "0101*00*0*1*|" #ejemplo clase
-    
+    "(0|(1(01*(00)*0)*1)*)" : "0101*00*0*1*|", #ejemplo clase
+    "((E|a)|b*)*" : "Ea|b*|*" #epsilon test
     }
 
 
