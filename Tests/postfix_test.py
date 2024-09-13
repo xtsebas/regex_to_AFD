@@ -22,7 +22,8 @@ regex_postfix_test = {
     "b*(z*|o)*s" : "b*z*o|*s",
     "55((88)*|3)*zzx*" : "5588*3|*zzx*",
     "(0|(1(01*(00)*0)*1)*)" : "0101*00*0*1*|", #ejemplo clase
-    "((E|a)|b*)*" : "Ea|b*|*" #epsilon test
+    "((E|a)|b*)*" : "Ea|b*|*", #epsilon test
+    "(0|1)(0|1)0*1(0|1)*" : "01|01|0*101|*"
     }
 
 
@@ -46,6 +47,7 @@ def test(regex_hash):
         else:
             debug = f"infix regex --> {BLUE}{regex}{RESET} postfix regex -> {MAGENTA}{regex}{RESET}"            
             print(f"{YELLOW}{"="*len(debug)}{RESET}")
+            print(f"result -> {postfix_output}")
             print("correct postfix -> "+regex_hash[regex])
             print(f"{RED}FAIL{RESET}")
             print("=" * len(debug))
