@@ -18,12 +18,12 @@ value --> valor esperado de conversion regex -> postfix
 """
 regex_postfix_test = {
     
-    "(b|b)*abb(a|b)*" : "bb|*abbab|*", #ejemplo proyecto
+    "(b|b)*abb(a|b)*" : "bb|*a?b?b?ab|*?", #ejemplo proyecto
     "b*(z*|o)*s" : "b*z*o|*s",
     "55((88)*|3)*zzx*" : "5588*3|*zzx*",
     "(0|(1(01*(00)*0)*1)*)" : "0101*00*0*1*|", #ejemplo clase
-    "((E|a)|b*)*" : "Ea|b*|*", #epsilon test
-    "(0|1)(0|1)0*1(0|1)*" : "01|01|0*101|*"
+    "((E|a)|b*)*" : "Ea|b*|*", #epsilon tes t
+    "(0|1)(0|1)0*1(0|1)*" : "01|01|?0*?1?01|*?"
     }
 
 

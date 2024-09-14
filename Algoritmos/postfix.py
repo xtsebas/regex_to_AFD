@@ -58,8 +58,8 @@ def shunting_yard(regex: str) -> str:
     
     # Eliminar los símbolos de concatenación ('?') del output si no es necesario
     output = [token for token in output]
-    output = [token for token in output if token != '?']
-
+    # output = [token for token in output if token != '?']
+    
     return ''.join(output)
 
             

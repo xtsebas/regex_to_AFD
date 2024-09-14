@@ -15,32 +15,37 @@ class AFN:
 
     def agregar_estado(self):
         estado = len(self.estados)
-        self.estados.append(f"q{estado}")
-        return f"q{estado}"
+        estado_nombre = f"q{estado}"
+        self.estados.append(estado_nombre)
+        return estado_nombre
 
-    def agregar_transicion(self, origen, simbolo, destino):
-        self.transiciones.append({"q": origen, "a": simbolo, "q'": destino})
-        if simbolo != '':  # Solo agregar símbolos que no sean epsilon
+    def agregar_transicion(self, origen, simbolo, destinos):
+        if not isinstance(destinos, list):
+            destinos = [destinos]
+        for destino in destinos:
+            self.transiciones.append({"q": origen, "a": simbolo, "q'": destino})
+        if simbolo != '' and simbolo != 'E':  # Only add symbols that are not epsilon
             self.simbolos.add(simbolo)
 
     def establecer_inicial(self, estado):
         self.estado_inicial = estado
 
     def establecer_aceptacion(self, estado):
-        self.estados_aceptacion.append(estado)
+        if estado not in self.estados_aceptacion:
+            self.estados_aceptacion.append(estado)
 
     def to_json(self):
-        # Retornar el autómata en el formato JSON especificado
+        # Return the automaton in the specified JSON format
         return {
             "Q": self.estados,
-            "s": list(filter(lambda x: x != '', self.simbolos)),  # Lista de símbolos (sin epsilon)
+            "s": list(self.simbolos),  # List of symbols (without epsilon)
             "q0": self.estado_inicial,
             "F": self.estados_aceptacion,
-            "p": [  # Transiciones
+            "p": [  # Transitions
                 {
                     "q": transicion["q"],
-                    "a": transicion["a"] if transicion["a"] != "" else "E",  # Epsilon se representa como "E"
-                    "q'": transicion["q'"]  # Lista de estados destino
+                    "a": transicion["a"] if transicion["a"] != '' else "E",  # Epsilon represented as "E"
+                    "q'": transicion["q'"]  # Destination state
                 }
                 for transicion in self.transiciones
             ]
@@ -51,51 +56,56 @@ def postfix_to_AFND(postfix: str) -> dict:
     afn = AFN()
 
     for simbolo in postfix:
-        if simbolo.isalnum():  # Si es un símbolo del alfabeto
+        if simbolo == ' ':
+            continue
+
+        if simbolo.isalnum() or simbolo == 'E':  # Operand
             estado_inicial = afn.agregar_estado()
             estado_aceptacion = afn.agregar_estado()
-            afn.agregar_transicion(estado_inicial, simbolo, [estado_aceptacion])
+            transition_symbol = '' if simbolo == 'E' else simbolo
+            afn.agregar_transicion(estado_inicial, transition_symbol, estado_aceptacion)
             pila.append((estado_inicial, estado_aceptacion))
 
-        elif simbolo == '*':  # Cerradura de Kleene
-            estado_inicial = afn.agregar_estado()
-            estado_aceptacion = afn.agregar_estado()
+        elif simbolo == '*':  # Estrella Kleene
             estado_anterior_inicial, estado_anterior_aceptacion = pila.pop()
-
-            # Transiciones sin epsilon (revisar con el algoritmo de Thompson para cerrar bucles)
-            afn.agregar_transicion(estado_inicial, '', [estado_anterior_inicial])
-            afn.agregar_transicion(estado_anterior_aceptacion, '', [estado_anterior_inicial])
-            afn.agregar_transicion(estado_anterior_aceptacion, '', [estado_aceptacion])
-            afn.agregar_transicion(estado_inicial, '', [estado_aceptacion])
-            
-            pila.append((estado_inicial, estado_aceptacion))
-
-        elif simbolo == '|':  # Unión
             estado_inicial = afn.agregar_estado()
             estado_aceptacion = afn.agregar_estado()
-            estado2_inicial, estado2_aceptacion = pila.pop()
-            estado1_inicial, estado1_aceptacion = pila.pop()
 
-            # Transiciones para la unión
-            afn.agregar_transicion(estado_inicial, '', [estado1_inicial, estado2_inicial])
-            afn.agregar_transicion(estado1_aceptacion, '', [estado_aceptacion])
-            afn.agregar_transicion(estado2_aceptacion, '', [estado_aceptacion])
+            # Epsilon transitions for Kleene Star
+            afn.agregar_transicion(estado_anterior_aceptacion, '', [estado_anterior_inicial, estado_aceptacion])
+            afn.agregar_transicion(estado_inicial, '', [estado_anterior_inicial, estado_aceptacion])
 
             pila.append((estado_inicial, estado_aceptacion))
 
-        elif simbolo == '.':  # Concatenación
+        elif simbolo == '|':  # Union
+            estado2_inicial, estado2_aceptacion = pila.pop()
+            estado1_inicial, estado1_aceptacion = pila.pop()
+            estado_inicial = afn.agregar_estado()
+            estado_aceptacion = afn.agregar_estado()
+
+            # Epsilon transitions for Union
+            afn.agregar_transicion(estado_inicial, '', [estado1_inicial, estado2_inicial])
+            afn.agregar_transicion(estado1_aceptacion, '', estado_aceptacion)
+            afn.agregar_transicion(estado2_aceptacion, '', estado_aceptacion)
+
+            pila.append((estado_inicial, estado_aceptacion))
+
+        elif simbolo == '?':  # Concatenation
             estado2_inicial, estado2_aceptacion = pila.pop()
             estado1_inicial, estado1_aceptacion = pila.pop()
 
-            # No usar epsilon en concatenación
-            afn.agregar_transicion(estado1_aceptacion, '', [estado2_inicial])
+            # Epsilon transition for Concatenation
+            afn.agregar_transicion(estado1_aceptacion, '', estado2_inicial)
 
             pila.append((estado1_inicial, estado2_aceptacion))
 
-    # Establecer los estados inicial y de aceptación
+        else:
+            raise ValueError(f"Unknown symbol: {simbolo}")
+
+    # Establish the initial and accepting states
     estado_inicial, estado_aceptacion = pila.pop()
     afn.establecer_inicial(estado_inicial)
     afn.establecer_aceptacion(estado_aceptacion)
 
-    # Retornar el autómata en formato JSON
+    # Return the automaton in JSON format
     return afn.to_json()
