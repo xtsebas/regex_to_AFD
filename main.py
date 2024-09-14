@@ -11,12 +11,13 @@ MAGENTA = "\033[35m"
 BRIGHT_GREEN = "\033[92m"
 MATRIX_GREEN = "\033[38;5;82m" 
 RED = "\033[31m"
+CYAN = "\033[36m"
 
 expresiones = [
     "(b|b)abb(a|b)",
     "((E|a)|b*)",
     "(0|(1(01*(00)0)*1))",
-    "(0|1)(0|1)0*1(0|1)"
+    "(0|1)(0|1)0*1(0|1)*"
 ]
 
 
@@ -33,6 +34,16 @@ for regex in expresiones:
     #postfix a afnd con thompson
     afnd = postfix_to_AFND (postfix = postfix )
     print(f' {MAGENTA}POSTFIX -> {MAGENTA}{RESET}AFND\n{json.dumps(afnd, indent=4)}')
+    
+    #afnd a afd con construccion de subconjuntos
+    afd = AFND_subconjunto( AFND = afnd)
+    print(f'\n{GREEN}{"-"*13}{GREEN}{RESET}\n AFND -> {CYAN}AFD{CYAN}\n{MATRIX_GREEN}{json.dumps(afd, indent=4)}{MATRIX_GREEN}{GREEN}\n{"-"*13}{GREEN}{RESET}\n')
+    
+    #afd -> AFD MIN
+    afd_min = minAFD( AFD = afd )
+    print(f'\n{GREEN}{"-"*13}{GREEN}{RESET}\n AFD -> {CYAN}AFD MIN{CYAN}\n{MATRIX_GREEN}{json.dumps(afd_min, indent=4)}{MATRIX_GREEN}{GREEN}\n{"-"*13}{GREEN}{RESET}\n')
+    
+    
 
 # regex = "(0|1)(0|1)0*1(0|1)*"
 # print(f"Regex: {regex}")
