@@ -24,8 +24,8 @@ class AFN:
             destinos = [destinos]
         for destino in destinos:
             self.transiciones.append({"q": origen, "a": simbolo, "q'": destino})
-        if simbolo != '' and simbolo != 'E':  # Only add symbols that are not epsilon
-            self.simbolos.add(simbolo)
+        # Add all symbols, including 'E' for epsilon transitions
+        self.simbolos.add(simbolo)
 
     def establecer_inicial(self, estado):
         self.estado_inicial = estado
@@ -38,18 +38,12 @@ class AFN:
         # Return the automaton in the specified JSON format
         return {
             "Q": self.estados,
-            "s": list(self.simbolos),  # List of symbols (without epsilon)
+            "s": list(self.simbolos),  # List of symbols, including 'E' for epsilon
             "q0": self.estado_inicial,
             "F": self.estados_aceptacion,
-            "p": [  # Transitions
-                {
-                    "q": transicion["q"],
-                    "a": transicion["a"] if transicion["a"] != '' else "E",  # Epsilon represented as "E"
-                    "q'": transicion["q'"]  # Destination state
-                }
-                for transicion in self.transiciones
-            ]
+            "p": self.transiciones  # Transitions are already correctly formatted
         }
+
 
 def postfix_to_AFND(postfix: str) -> dict:
     pila = []
@@ -62,18 +56,17 @@ def postfix_to_AFND(postfix: str) -> dict:
         if simbolo.isalnum() or simbolo == 'E':  # Operand
             estado_inicial = afn.agregar_estado()
             estado_aceptacion = afn.agregar_estado()
-            transition_symbol = '' if simbolo == 'E' else simbolo
-            afn.agregar_transicion(estado_inicial, transition_symbol, estado_aceptacion)
+            afn.agregar_transicion(estado_inicial, simbolo, estado_aceptacion)
             pila.append((estado_inicial, estado_aceptacion))
 
-        elif simbolo == '*':  # Estrella Kleene
+        elif simbolo == '*':  # Kleene Star
             estado_anterior_inicial, estado_anterior_aceptacion = pila.pop()
             estado_inicial = afn.agregar_estado()
             estado_aceptacion = afn.agregar_estado()
 
             # Epsilon transitions for Kleene Star
-            afn.agregar_transicion(estado_anterior_aceptacion, '', [estado_anterior_inicial, estado_aceptacion])
-            afn.agregar_transicion(estado_inicial, '', [estado_anterior_inicial, estado_aceptacion])
+            afn.agregar_transicion(estado_anterior_aceptacion, 'E', [estado_anterior_inicial, estado_aceptacion])
+            afn.agregar_transicion(estado_inicial, 'E', [estado_anterior_inicial, estado_aceptacion])
 
             pila.append((estado_inicial, estado_aceptacion))
 
@@ -83,29 +76,29 @@ def postfix_to_AFND(postfix: str) -> dict:
             estado_inicial = afn.agregar_estado()
             estado_aceptacion = afn.agregar_estado()
 
-            # Epsilon transitions for Union
-            afn.agregar_transicion(estado_inicial, '', [estado1_inicial, estado2_inicial])
-            afn.agregar_transicion(estado1_aceptacion, '', estado_aceptacion)
-            afn.agregar_transicion(estado2_aceptacion, '', estado_aceptacion)
+            # Epsilon para Union
+            afn.agregar_transicion(estado_inicial, 'E', [estado1_inicial, estado2_inicial])
+            afn.agregar_transicion(estado1_aceptacion, 'E', estado_aceptacion)
+            afn.agregar_transicion(estado2_aceptacion, 'E', estado_aceptacion)
 
             pila.append((estado_inicial, estado_aceptacion))
 
-        elif simbolo == '?':  # Concatenation
+        elif simbolo == '?':  # Concatenacion
             estado2_inicial, estado2_aceptacion = pila.pop()
             estado1_inicial, estado1_aceptacion = pila.pop()
 
-            # Epsilon transition for Concatenation
-            afn.agregar_transicion(estado1_aceptacion, '', estado2_inicial)
+            # Epsilon transition para Concatenacion
+            afn.agregar_transicion(estado1_aceptacion, 'E', estado2_inicial)
 
             pila.append((estado1_inicial, estado2_aceptacion))
 
         else:
             raise ValueError(f"Unknown symbol: {simbolo}")
 
-    # Establish the initial and accepting states
+    # Establcer los es
     estado_inicial, estado_aceptacion = pila.pop()
     afn.establecer_inicial(estado_inicial)
     afn.establecer_aceptacion(estado_aceptacion)
 
-    # Return the automaton in JSON format
+    # Return JSON format
     return afn.to_json()

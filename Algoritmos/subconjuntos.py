@@ -15,235 +15,113 @@ def AFND_subconjunto(AFND: dict) -> dict:
     F = set(AFND["F"])
     transitions = AFND["p"]
     
-    if 'E' in s:
-
-        # Crear la tabla de transición
-        delta = {}
-        for state in Q:
-            delta[state] = {}
-            for symbol in s:
-                delta[state][symbol] = None
-        
-        for transition in transitions:
-            q = transition["q"]
-            a = transition["a"]
-            q_prime = transition["q'"]
-            delta[q][a] = q_prime
-        
-        
-        # Crear clausulas de transición
-        clausulas = Clausulas(Q, s, delta)
-        
-        # Creamos la nueva tabla de transición con las clausulas
-        delta_prime = {}
-        estados_usados =[]
-        nuevos_estados = []
-        procesados = []
-        
-        inicial = tuple(clausulas[q0])
-        delta_prime[inicial] = {}
-        estados_usados.append(inicial)
-        nuevos_estados.append(inicial)
-        
-        while estados_usados:
-            # Procesamos el siguiente conjunto de estados (cláusula)
-            clausula_actual = estados_usados.pop(0)
-            procesados.append(clausula_actual)
-            
-            for symbol in s:
-                if symbol != 'E':
-                    estados_alcanzables = set()
-                    
-                    # Para cada estado en la cláusula actual, encontramos sus transiciones
-                    for state in clausula_actual:
-                        if delta[state][symbol] is not None:
-                            estados_alcanzables.update(clausulas[delta[state][symbol]])
-                    
-                    if estados_alcanzables:
-                        clausula_nueva = tuple(sorted(estados_alcanzables))  # Convertir el conjunto en tupla
-
-                        # Añadimos la transición a delta_prime
-                        delta_prime[clausula_actual][symbol] = clausula_nueva
-                        
-                        # Si el nuevo conjunto no ha sido procesado, lo añadimos a la lista de estados por explorar
-                        if clausula_nueva not in procesados and clausula_nueva not in estados_usados:
-                            estados_usados.append(clausula_nueva)
-                            nuevos_estados.append(clausula_nueva)
-
-                        # Añadimos el nuevo conjunto a la tabla de transición si aún no existe
-                        if clausula_nueva not in delta_prime:
-                            delta_prime[clausula_nueva] = {}
-                
-        
-        # Revisar nuevos_estados y convertir tuplas de un solo elemento a string
-        for i in range(len(nuevos_estados)):
-            if len(nuevos_estados[i]) == 1:
-                nuevos_estados[i] = nuevos_estados[i][0]
-        
-        
-        # Crear el nuevo conjunto de símbolos sin 'E'
-        s_prime = [symbol for symbol in s if symbol != 'E']
-        
-        
-        # Determinar el nuevo estado inicial
-        q0_prime = None
-        for estado in nuevos_estados:
-            if q0 in estado:
-                q0_prime = estado
-                break
-                
-        # Determinar los nuevos estados finales
-        F_prime = []
-        for estado in nuevos_estados:
-            if isinstance(estado, tuple):
-                if any(subestado in F for subestado in estado):
-                    F_prime.append(estado)
-            else:
-                if estado in F:
-                    F_prime.append(estado)
-                
-        # Crear los predicados de aceptación
-        predicados = []
-        for estado, transiciones in delta_prime.items():
-            for simbolo, destino in transiciones.items():
-                if isinstance(estado, tuple) and len(estado) == 1:
-                    estado = estado[0]
-                if isinstance(destino, tuple) and len(destino) == 1:
-                    destino = destino[0]
-                predicados.append({"q": estado, "a": simbolo, "q'": destino})
-        
-        
-        # Crear el AFD resultante
-        AFD = {
-            "Q": nuevos_estados,
-            "s": s_prime,
-            "q0": q0_prime,
-            "F": F_prime,
-            "p": predicados
-        }
-        
-        return AFD 
-    else:
-        # Crear la tabla de transición
-        delta = {}
-        for state in Q:
-            delta[state] = {}
-            for symbol in s:
-                delta[state][symbol] = None
-        
-        for transition in transitions:
-            q = transition["q"]
-            a = transition["a"]
-            q_prime = transition["q'"]
-            delta[q][a] = q_prime
-
-        # Crear clausulas de transición
-        clausulas = Clausulas(Q, s, delta)
-        
-        # Creamos la nueva tabla de transición con las clausulas
-        delta_prime = {}
-        estados_usados = []
-        nuevos_estados = []
-        procesados = []
-        
-        inicial = tuple(clausulas[q0])
-        delta_prime[inicial] = {}
-        estados_usados.append(inicial)
-        nuevos_estados.append(inicial)
-        
-        while estados_usados:
-            # Procesamos el siguiente conjunto de estados (cláusula)
-            clausula_actual = estados_usados.pop(0)
-            procesados.append(clausula_actual)
-            
-            for symbol in s:
-                estados_alcanzables = set()
-                
-                # Para cada estado en la cláusula actual, encontramos sus transiciones
-                for state in clausula_actual:
-                    if delta[state][symbol] is not None:
-                        estados_alcanzables.update(clausulas[delta[state][symbol]])
-                
-                if estados_alcanzables:
-                    clausula_nueva = tuple(sorted(estados_alcanzables))  # Convertir el conjunto en tupla
-
-                    # Añadimos la transición a delta_prime
-                    delta_prime[clausula_actual][symbol] = clausula_nueva
-                    
-                    # Si el nuevo conjunto no ha sido procesado, lo añadimos a la lista de estados por explorar
-                    if clausula_nueva not in procesados and clausula_nueva not in estados_usados:
-                        estados_usados.append(clausula_nueva)
-                        nuevos_estados.append(clausula_nueva)
-
-                    # Añadimos el nuevo conjunto a la tabla de transición si aún no existe
-                    if clausula_nueva not in delta_prime:
-                        delta_prime[clausula_nueva] = {}
-        
-        # Revisar nuevos_estados y convertir tuplas de un solo elemento a string
-        for i in range(len(nuevos_estados)):
-            if len(nuevos_estados[i]) == 1:
-                nuevos_estados[i] = nuevos_estados[i][0]
-        
-        # Determinar el nuevo estado inicial
-        q0_prime = None
-        for estado in nuevos_estados:
-            if q0 in estado:
-                q0_prime = estado
-                break
-                
-        # Determinar los nuevos estados finales
-        F_prime = []
-        for estado in nuevos_estados:
-            if isinstance(estado, tuple):
-                if any(subestado in F for subestado in estado):
-                    F_prime.append(estado)
-            else:
-                if estado in F:
-                    F_prime.append(estado)
-                
-        # Crear los predicados de aceptación
-        predicados = []
-        for estado, transiciones in delta_prime.items():
-            for simbolo, destino in transiciones.items():
-                if isinstance(estado, tuple) and len(estado) == 1:
-                    estado = estado[0]
-                if isinstance(destino, tuple) and len(destino) == 1:
-                    destino = destino[0]
-                predicados.append({"q": estado, "a": simbolo, "q'": destino})
-        
-        # Crear el AFD resultante
-        AFD = {
-            "Q": nuevos_estados,
-            "s": s, 
-            "q0": q0_prime,
-            "F": F_prime,
-            "p": predicados
-        }
-        
-        return AFD
+    # Crear la tabla de transición delta con conjuntos para manejar múltiples transiciones
+    delta = {}
+    for state in Q:
+        delta[state] = {}
     
-def Clausulas(Q, s, delta):
+    for transition in transitions:
+        q = transition["q"]
+        a = transition["a"]
+        q_prime = transition["q'"]
+        if q not in delta:
+            delta[q] = {}
+        if a not in delta[q]:
+            delta[q][a] = set()
+        if isinstance(q_prime, list):
+            delta[q][a].update(q_prime)
+        else:
+            delta[q][a].add(q_prime)
+    
+    # Calcular las cláusulas (epsilon-cierres)
+    clausulas = Clausulas(Q, delta)
+    
+    # Crear la nueva tabla de transición con las cláusulas
+    delta_prime = {}
+    estados_usados = []
+    nuevos_estados = []
+    procesados = set()
+    
+    inicial = tuple(sorted(clausulas[q0]))
+    delta_prime[inicial] = {}
+    estados_usados.append(inicial)
+    nuevos_estados.append(inicial)
+    
+    s_prime = [symbol for symbol in s if symbol != 'E']  # Eliminar 'E' del alfabeto
+    
+    while estados_usados:
+        # Procesamos el siguiente conjunto de estados (cláusula)
+        clausula_actual = estados_usados.pop(0)
+        procesados.add(clausula_actual)
+        delta_prime[clausula_actual] = {}
+        
+        for symbol in s_prime:
+            estados_alcanzables = set()
+            
+            # Para cada estado en la cláusula actual, encontramos sus transiciones
+            for state in clausula_actual:
+                destinos = delta[state].get(symbol, set())
+                for destino in destinos:
+                    estados_alcanzables.update(clausulas[destino])
+            
+            if estados_alcanzables:
+                clausula_nueva = tuple(sorted(estados_alcanzables))  # Convertir el conjunto en tupla
+                
+                # Añadimos la transición a delta_prime
+                delta_prime[clausula_actual][symbol] = clausula_nueva
+                
+                # Si el nuevo conjunto no ha sido procesado, lo añadimos a la lista de estados por explorar
+                if clausula_nueva not in procesados and clausula_nueva not in estados_usados:
+                    estados_usados.append(clausula_nueva)
+                    nuevos_estados.append(clausula_nueva)
+    
+    # Convertir los estados (tuplas) a cadenas para simplificar
+    estados_nombres = {}
+    for estado in nuevos_estados:
+        nombre_estado = ','.join(sorted(estado))
+        estados_nombres[estado] = nombre_estado
+    
+    # Determinar el nuevo estado inicial
+    q0_prime = estados_nombres[inicial]
+    
+    # Determinar los nuevos estados finales
+    F_prime = []
+    for estado in nuevos_estados:
+        if any(subestado in F for subestado in estado):
+            F_prime.append(estados_nombres[estado])
+    
+    # Crear los predicados de aceptación
+    predicados = []
+    for estado, transiciones in delta_prime.items():
+        estado_str = estados_nombres[estado]
+        for simbolo, destino in transiciones.items():
+            destino_str = estados_nombres[destino]
+            predicados.append({"q": estado_str, "a": simbolo, "q'": destino_str})
+    
+    # Crear el AFD resultante
+    AFD = {
+        "Q": list(estados_nombres.values()),
+        "s": s_prime,
+        "q0": q0_prime,
+        "F": F_prime,
+        "p": predicados
+    }
+    
+    return AFD
+
+    
+def Clausulas(Q, delta):
     clausulas = {}
     
     for state in Q:
-        clausulas[state] = set()  # Usamos un set para evitar duplicados
-        
-        for symbol in s:
-            if symbol == 'E' and delta[state][symbol] is not None:
-                current_state = state
-                clausulas[state].add(current_state)  # El estado se puede llegar a sí mismo
-                
-                # Navegar por las transiciones epsilon
-                while current_state is not None:
-                    next_state = delta[current_state]['E']
-                    if next_state is None or next_state in clausulas[state]:
-                        break
-                    clausulas[state].add(next_state)
-                    current_state = next_state
-
-        # Si no se encontró ninguna transición epsilon, el estado se mantiene solo
-        if not clausulas[state]:
-            clausulas[state].add(state)
-
-    # Convertir los sets en listas para el formato de salida esperado
+        cierre = set()
+        stack = [state]
+        while stack:
+            actual = stack.pop()
+            cierre.add(actual)
+            for next_state in delta[actual].get('E', set()):
+                if next_state not in cierre:
+                    cierre.add(next_state)
+                    stack.append(next_state)
+        clausulas[state] = cierre
     return clausulas

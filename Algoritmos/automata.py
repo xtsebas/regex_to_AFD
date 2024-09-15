@@ -37,3 +37,4 @@ def load_automaton_from_file(filename: str) -> Automaton:
     with open(filename, "r") as file:
         data = json.load(file)
     return Automaton(data["Q"], data["s"], data["q0"], data["F"], data["p"])
+
