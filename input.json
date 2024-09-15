@@ -1,0 +1,7 @@
+{
+    "(0|1)(0|1)0*1(0|1)*" : "000000000000000000000010",
+    "(b|b)abb(a|b)" : "babba",
+    "b*(z*|o)*s" : "bbbbbbbbbbbbbbbbbzzzzzzs",
+    "(x(0|1)*)*" : "x0x0x0x0",
+    "(x|d)jsa(lol)*" : "xjsalollollol"
+}
