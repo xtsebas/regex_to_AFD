@@ -2,6 +2,7 @@ from Controller.postfix import regex_to_postfix
 from Controller.AFND import postfix_to_AFND
 from Controller.subconjuntos import AFND_subconjunto
 from Controller.minAFD import minAFD
+from Model.automata import Automaton
 import json
 import time
 
@@ -54,8 +55,30 @@ def simular_AFD(regex: str, cadena: str):
     
     #5 -> Implementacion de simulacion de un AFD
     print(f' {MAGENTA}SIMULANDO AFD MIN{MAGENTA}{RESET}\n')
+    
+    verificar_cadena(automata = afd_min, cadena = cadena)
 
     simular_cadena_AFD( afd = afd_min, cadena = cadena)
+
+def verificar_cadena(automata: dict, cadena: str):
+    """
+    Verifica si una cadena es aceptada por un autómata.
+
+    Parámetros:
+    - automata: Automata
+        Autómata que se utilizará para verificar la cadena.
+    - cadena: str
+        Cadena de entrada que se evaluará en el autómata.
+
+    Muestra:
+    - Mensaje indicando si la cadena es aceptada o rechazada.
+    """
+    automaton = Automaton(automata["Q"], automata["s"], automata["q0"], automata["F"], automata["p"])
+    
+    if automaton.accepted( automaton.q0 , cadena):
+        print(f"\n{GREEN}La cadena -> '{YELLOW}{cadena}{RESET}{GREEN}' es aceptada por el automata, aqui el procedimiento.{RESET}")
+    else:
+        print(f"\n{RED}La cadena -> '{YELLOW}{cadena}{RESET}{RED}' es rechazada.{RESET}")
 
 def simular_cadena_AFD(afd: dict, cadena: str):
     """
