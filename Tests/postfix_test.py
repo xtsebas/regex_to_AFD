@@ -1,7 +1,7 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from Algoritmos.postfix import regex_to_postfix, insertar_concatenacion # func test
+from Controller.postfix import regex_to_postfix, insertar_concatenacion # func test
 
 GREEN = "\033[32m"
 RESET = "\033[0m"

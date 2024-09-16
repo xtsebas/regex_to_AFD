@@ -1,4 +1,4 @@
-from Algoritmos.simulacion import simular_AFD 
+from View.simulacion import simular_AFD 
 import json
 
 

@@ -8,7 +8,7 @@ import os
 
 # Añade el directorio base del proyecto al sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from Estructuras.Stack import Stack
+from Model.Estructuras.Stack import Stack
 RED = "\033[31m"
 
 

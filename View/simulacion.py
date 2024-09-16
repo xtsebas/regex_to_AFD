@@ -1,7 +1,7 @@
-from Algoritmos.postfix import regex_to_postfix
-from Algoritmos.AFND import postfix_to_AFND
-from Algoritmos.subconjuntos import AFND_subconjunto
-from Algoritmos.minAFD import minAFD
+from Controller.postfix import regex_to_postfix
+from Controller.AFND import postfix_to_AFND
+from Controller.subconjuntos import AFND_subconjunto
+from Controller.minAFD import minAFD
 import json
 import time
 
@@ -324,7 +324,7 @@ def crear_archivo_json(automata, nombre_archivo):
 
 
     # Escribir en un archivo JSON
-    with open(f'salida/{nombre_archivo}.json', 'w', encoding='utf-8') as f:
+    with open(f'Assets/{nombre_archivo}.json', 'w', encoding='utf-8') as f:
         json.dump(automata_json, f, ensure_ascii=False, indent=4)
     
     print(f"Archivo JSON '{nombre_archivo}.json' creado exitosamente en la carpeta 'salida'.")

@@ -2,7 +2,7 @@ import sys
 import os
 import json
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from Algoritmos.AFND import postfix_to_AFND  # Importar la función que convierte postfix a AFND
+from Controller.AFND import postfix_to_AFND  # Importar la función que convierte postfix a AFND
 
 def test_afnd():
     # Ejemplos de expresiones regulares en notación postfix

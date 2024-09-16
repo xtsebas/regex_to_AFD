@@ -1,10 +1,10 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from Algoritmos.postfix import regex_to_postfix
-from Algoritmos.AFND import postfix_to_AFND
-from Algoritmos.subconjuntos import AFND_subconjunto
-from Algoritmos.minAFD import minAFD
+from Controller.postfix import regex_to_postfix
+from Controller.AFND import postfix_to_AFND
+from Controller.subconjuntos import AFND_subconjunto
+from Controller.minAFD import minAFD
 
 regex = "(0?1)(0?1)0*1(0?1)*"
 
