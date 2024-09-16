@@ -25,14 +25,20 @@ def simular_AFD(regex: str, cadena: str):
 
     # 2 -> postfix a afnd con thompson
     afnd = postfix_to_AFND (postfix = postfix )
+    crear_archivo_json(automata= afnd, nombre_archivo = f'afnd_{cadena}')
+    
     print(f' {MAGENTA}POSTFIX -> {MAGENTA}{RESET}AFND\n{json.dumps(afnd, indent=4)}')
-   
+    
     # 3 -> afnd a afd con construccion de subconjuntos
     afd = AFND_subconjunto( AFND = afnd)
+    crear_archivo_json(automata= afd, nombre_archivo = f'afd_{cadena}')
+
     print(f'\n{GREEN}{"-"*13}{GREEN}{RESET}\n AFND -> {CYAN}AFD{CYAN}\n{MATRIX_GREEN}{json.dumps(afd, indent=4)}{MATRIX_GREEN}{GREEN}\n{"-"*13}{GREEN}{RESET}\n')
     
     # 4 -> Implementacion de un algoritmo para minimizacion de un AFD
     afd_min = minAFD( AFD = afd )
+    crear_archivo_json(automata= afd_min, nombre_archivo = f'afd_min{cadena}')
+
     print(f'\n{GREEN}{"-"*13}{GREEN}{RESET}\n AFD -> {CYAN}AFD MIN{CYAN}\n{MATRIX_GREEN}{json.dumps(afd_min, indent=4)}{MATRIX_GREEN}{GREEN}\n{"-"*13}{GREEN}{RESET}\n')
     
     #5 -> Implementacion de simulacion de un AFD
@@ -108,3 +114,38 @@ def simular_cadena_AFD(afd: dict, cadena: str):
         print(f"\n{MATRIX_GREEN}La cadena -> '{MATRIX_GREEN}{YELLOW}{cadena}{YELLOW}{MATRIX_GREEN}' es aceptada.{MATRIX_GREEN}{RESET} Estado final: {estado_actual} es un estado de aceptación.")
     else:
         print(f"\n{RED}La cadena -> '{RED}{YELLOW}{cadena}{YELLOW}{RESET}' {RED}es rechazada.{RED}{RESET} Estado final: {estado_actual} no es un estado de aceptación.")
+
+def crear_archivo_json(automata, nombre_archivo):
+    print("Creando archivo JSON...")
+    
+    # Convertir los conjuntos a listas o cadenas adecuadas para JSON
+    estados = sorted(list(automata["Q"]))
+    simbolos = sorted(list(automata["s"]))
+    inicio = automata["q0"]
+    aceptacion = sorted(list(automata["F"]))
+    transiciones = []
+
+    # Formatear las transiciones como tuplas
+    for transicion in automata["p"]:
+        origen = transicion['q']
+        simbolo = transicion['a']
+        destino = transicion["q'"]
+        # Formatear la transición como una tupla
+        transiciones.append((origen, simbolo, destino))
+
+    # Construir el diccionario con la estructura requerida
+    automata_json = {
+        "ESTADOS": estados,
+        "SIMBOLOS": simbolos,
+        "INICIO": inicio,
+        "ACEPTACION": aceptacion,
+        "TRANSICIONES": transiciones
+    }
+
+
+    # Escribir en un archivo JSON
+    with open(f'salida/{nombre_archivo}.json', 'w', encoding='utf-8') as f:
+        json.dump(automata_json, f, ensure_ascii=False, indent=4)
+    
+    print(f"Archivo JSON '{nombre_archivo}.json' creado exitosamente en la carpeta 'salida'.")
+
