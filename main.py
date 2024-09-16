@@ -8,4 +8,4 @@ with open('input.json', 'r') as archivo:
 
 for regex, cadena in datos.items():
     simular_AFD( regex = regex , cadena = cadena)
-    print("\n\n")
+    

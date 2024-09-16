@@ -151,4 +151,4 @@ afd = {
     ]
 }
 
-print(minAFD(afd))
+# print(minAFD(afd))
